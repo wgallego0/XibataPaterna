@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>XibataPaterna — Painel do Responsável</title>
+<meta name="description" content="Painel gerencial para cadastrar filhos, distribuir tarefas de casa diárias e acompanhar os indicadores de execução.">
+<meta name="theme-color" content="#0f1424">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" href="/icons/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/icons/icon-180.png">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+
+<!-- ------------------------------------------------------------- entrada -->
+<main id="view-auth" class="container hidden" style="max-width:420px">
+  <div class="center" style="margin:34px 0 18px">
+    <div style="font-size:2.6rem">🏠</div>
+    <h1>XibataPaterna</h1>
+    <p class="muted small">Tarefas de casa, combinadas e acompanhadas.</p>
+  </div>
+
+  <form id="form-login" class="card hidden">
+    <h2>Entrar como responsável</h2>
+    <div class="field">
+      <label for="login-email">E-mail</label>
+      <input id="login-email" type="email" autocomplete="username" required>
+    </div>
+    <div class="field">
+      <label for="login-password">Senha</label>
+      <input id="login-password" type="password" autocomplete="current-password" required>
+    </div>
+    <button class="btn-block" type="submit">Entrar</button>
+  </form>
+
+  <form id="form-setup" class="card hidden">
+    <h2>Criar o primeiro responsável</h2>
+    <p class="muted small">Ninguém foi cadastrado ainda. Esta conta terá acesso ao painel gerencial.</p>
+    <div class="field">
+      <label for="setup-name">Seu nome</label>
+      <input id="setup-name" type="text" autocomplete="name" required>
+    </div>
+    <div class="field">
+      <label for="setup-email">E-mail</label>
+      <input id="setup-email" type="email" autocomplete="username" required>
+    </div>
+    <div class="field">
+      <label for="setup-password">Senha (mínimo 6 caracteres)</label>
+      <input id="setup-password" type="password" autocomplete="new-password" minlength="6" required>
+    </div>
+    <button class="btn-block" type="submit">Criar conta e entrar</button>
+  </form>
+</main>
+
+<!-- --------------------------------------------------------------- painel -->
+<div id="view-app" class="hidden">
+  <header class="topbar">
+    <div class="brand"><span class="logo">🏠</span> XibataPaterna</div>
+    <div class="grow"></div>
+    <span id="parent-name" class="small muted"></span>
+    <button id="btn-logout" class="btn-ghost btn-sm" type="button">Sair</button>
+  </header>
+
+  <main class="container">
+    <div class="tabs" role="tablist">
+      <button class="tab" role="tab" data-tab="dashboard" aria-selected="true">Dashboard</button>
+      <button class="tab" role="tab" data-tab="dia" aria-selected="false">Tarefas do dia</button>
+      <button class="tab" role="tab" data-tab="rotinas" aria-selected="false">Rotinas</button>
+      <button class="tab" role="tab" data-tab="filhos" aria-selected="false">Filhos &amp; carteirinhas</button>
+      <button class="tab" role="tab" data-tab="proatividade" aria-selected="false">Proatividade <span id="badge-pending" class="pill warn hidden"></span></button>
+      <button class="tab" role="tab" data-tab="responsaveis" aria-selected="false">Responsáveis</button>
+    </div>
+
+    <!-- Dashboard -->
+    <section id="tab-dashboard" class="tab-panel">
+      <div class="card">
+        <div class="row">
+          <div>
+            <label for="range-from">De</label>
+            <input id="range-from" type="date">
+          </div>
+          <div>
+            <label for="range-to">Até</label>
+            <input id="range-to" type="date">
+          </div>
+          <div class="grow"></div>
+          <button class="btn-soft btn-sm" type="button" data-range="7">7 dias</button>
+          <button class="btn-soft btn-sm" type="button" data-range="30">30 dias</button>
+          <button class="btn-soft btn-sm" type="button" data-range="90">90 dias</button>
+        </div>
+      </div>
+
+      <div id="kpis" class="grid grid-kpi" style="margin-top:14px"></div>
+
+      <div class="card" style="margin-top:14px">
+        <h2>Execução por dia</h2>
+        <p class="muted small">Barras cheias = tarefas concluídas; contorno = tarefas atribuídas.</p>
+        <div id="chart" class="chart"></div>
+      </div>
+
+      <div class="grid grid-2" style="margin-top:14px">
+        <div class="card">
+          <h2>Desempenho por filho</h2>
+          <div id="ranking" class="list"></div>
+        </div>
+        <div class="card">
+          <h2>Dias de execução</h2>
+          <p class="muted small">Cada coluna é uma semana; a intensidade mostra o percentual concluído no dia.</p>
+          <div id="heatmap" class="heatmap"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tarefas do dia -->
+    <section id="tab-dia" class="tab-panel hidden">
+      <div class="card">
+        <div class="row">
+          <div>
+            <label for="day-date">Dia</label>
+            <input id="day-date" type="date">
+          </div>
+          <div class="grow"></div>
+          <button id="btn-copy-yesterday" class="btn-soft btn-sm" type="button">Repetir dia anterior</button>
+          <button id="btn-new-task" class="btn-sm" type="button">+ Nova tarefa</button>
+        </div>
+      </div>
+      <div id="day-list" class="stack" style="margin-top:14px"></div>
+    </section>
+
+    <!-- Rotinas -->
+    <section id="tab-rotinas" class="tab-panel hidden">
+      <div class="card">
+        <div class="row">
+          <div class="grow">
+            <h2>Rotinas recorrentes</h2>
+            <p class="muted small" style="margin:0">As tarefas são criadas automaticamente nos dias da semana escolhidos.</p>
+          </div>
+          <button id="btn-new-routine" class="btn-sm" type="button">+ Nova rotina</button>
+        </div>
+      </div>
+      <div id="routine-list" class="stack" style="margin-top:14px"></div>
+    </section>
+
+    <!-- Filhos -->
+    <section id="tab-filhos" class="tab-panel hidden">
+      <div class="card">
+        <div class="row">
+          <div class="grow">
+            <h2>Filhos e carteirinhas</h2>
+            <p class="muted small" style="margin:0">Envie o link da carteirinha para o filho. Ele abre sem senha e pode ser instalado no celular.</p>
+          </div>
+          <button id="btn-new-child" class="btn-sm" type="button">+ Cadastrar filho</button>
+        </div>
+      </div>
+      <div id="children-list" class="stack" style="margin-top:14px"></div>
+    </section>
+
+    <!-- Proatividade -->
+    <section id="tab-proatividade" class="tab-panel hidden">
+      <div class="card">
+        <div class="row">
+          <div class="grow">
+            <h2>Atividades proativas</h2>
+            <p class="muted small" style="margin:0">Registros feitos pelos filhos na carteirinha. Aprove para contar os pontos.</p>
+          </div>
+          <select id="proactive-filter" style="width:auto">
+            <option value="pending">Aguardando análise</option>
+            <option value="approved">Aprovadas</option>
+            <option value="rejected">Recusadas</option>
+            <option value="">Todas</option>
+          </select>
+        </div>
+      </div>
+      <div id="proactive-list" class="stack" style="margin-top:14px"></div>
+    </section>
+
+    <!-- Responsáveis -->
+    <section id="tab-responsaveis" class="tab-panel hidden">
+      <div class="card">
+        <div class="row">
+          <div class="grow">
+            <h2>Responsáveis</h2>
+            <p class="muted small" style="margin:0">Somente responsáveis acessam o dashboard e geram carteirinhas.</p>
+          </div>
+          <button id="btn-new-parent" class="btn-sm" type="button">+ Adicionar responsável</button>
+        </div>
+      </div>
+      <div id="parents-list" class="stack" style="margin-top:14px"></div>
+    </section>
+  </main>
+</div>
+
+<!-- --------------------------------------------------------------- modais -->
+<dialog id="dlg-task">
+  <form class="dialog-body" method="dialog" id="form-task">
+    <div class="dialog-head"><h2 id="dlg-task-title">Nova tarefa</h2></div>
+    <div class="field">
+      <label for="task-title">O que precisa ser feito?</label>
+      <input id="task-title" type="text" maxlength="80" required>
+    </div>
+    <div class="field">
+      <label for="task-desc">Detalhes (opcional)</label>
+      <textarea id="task-desc" maxlength="300"></textarea>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label for="task-date">Data</label>
+        <input id="task-date" type="date" required>
+      </div>
+      <div class="field">
+        <label for="task-points">Pontos</label>
+        <input id="task-points" type="number" min="0" max="100" value="10">
+      </div>
+    </div>
+    <div class="field">
+      <label>Para quem</label>
+      <div id="task-children" class="row"></div>
+    </div>
+    <div class="row row-end">
+      <button type="button" class="btn-ghost" data-close>Cancelar</button>
+      <button type="submit">Salvar</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="dlg-routine">
+  <form class="dialog-body" method="dialog" id="form-routine">
+    <div class="dialog-head"><h2 id="dlg-routine-title">Nova rotina</h2></div>
+    <div class="field">
+      <label for="routine-title">Tarefa recorrente</label>
+      <input id="routine-title" type="text" maxlength="80" required>
+    </div>
+    <div class="field">
+      <label for="routine-desc">Detalhes (opcional)</label>
+      <textarea id="routine-desc" maxlength="300"></textarea>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label for="routine-child">Filho</label>
+        <select id="routine-child" required></select>
+      </div>
+      <div class="field">
+        <label for="routine-points">Pontos</label>
+        <input id="routine-points" type="number" min="0" max="100" value="10">
+      </div>
+    </div>
+    <div class="field">
+      <label>Dias da semana</label>
+      <div id="routine-weekdays" class="row"></div>
+    </div>
+    <div class="row row-end">
+      <button type="button" class="btn-ghost" data-close>Cancelar</button>
+      <button type="submit">Salvar</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="dlg-child">
+  <form class="dialog-body" method="dialog" id="form-child">
+    <div class="dialog-head"><h2 id="dlg-child-title">Cadastrar filho</h2></div>
+    <div class="field">
+      <label for="child-name">Nome</label>
+      <input id="child-name" type="text" maxlength="60" required>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label for="child-emoji">Avatar</label>
+        <select id="child-emoji"></select>
+      </div>
+      <div class="field">
+        <label for="child-birth">Nascimento (opcional)</label>
+        <input id="child-birth" type="date">
+      </div>
+    </div>
+    <div class="field">
+      <label>Cor da carteirinha</label>
+      <div id="child-colors" class="row"></div>
+    </div>
+    <div class="row row-end">
+      <button type="button" class="btn-ghost" data-close>Cancelar</button>
+      <button type="submit">Salvar</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="dlg-parent">
+  <form class="dialog-body" method="dialog" id="form-parent">
+    <div class="dialog-head"><h2>Adicionar responsável</h2></div>
+    <div class="field">
+      <label for="parent-name-in">Nome</label>
+      <input id="parent-name-in" type="text" required>
+    </div>
+    <div class="field">
+      <label for="parent-email">E-mail</label>
+      <input id="parent-email" type="email" required>
+    </div>
+    <div class="field">
+      <label for="parent-password">Senha provisória (mínimo 6 caracteres)</label>
+      <input id="parent-password" type="password" minlength="6" required>
+    </div>
+    <div class="row row-end">
+      <button type="button" class="btn-ghost" data-close>Cancelar</button>
+      <button type="submit">Adicionar</button>
+    </div>
+  </form>
+</dialog>
+
+<div id="toasts"></div>
+<script src="/app.js" type="module"></script>
+</body>
+</html>

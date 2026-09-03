@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Minha Carteirinha de Tarefas</title>
+<meta name="description" content="Carteirinha com as tarefas de casa do dia.">
+<meta name="theme-color" content="#0f1424">
+<meta name="robots" content="noindex, nofollow">
+<link rel="manifest" href="/manifest-carteirinha.webmanifest">
+<link rel="icon" href="/icons/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/icons/icon-180.png">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+
+<main class="card-page">
+  <div id="loading" class="empty">Carregando sua carteirinha…</div>
+
+  <div id="content" class="hidden">
+    <section id="badge" class="badge">
+      <div class="who">
+        <div class="face" id="face">🧒</div>
+        <div>
+          <div class="name" id="name">—</div>
+          <div class="date" id="date">—</div>
+        </div>
+      </div>
+      <div class="stats">
+        <div class="stat"><b id="stat-done">0/0</b><span>tarefas</span></div>
+        <div class="stat"><b id="stat-points">0</b><span>pontos</span></div>
+        <div class="stat"><b id="stat-streak">0</b><span>🔥 sequência</span></div>
+      </div>
+    </section>
+
+    <div class="card" style="margin-top:14px">
+      <div class="row" style="margin-bottom:10px">
+        <h2 class="grow" style="margin:0">Minhas tarefas de hoje</h2>
+        <span id="rate-pill" class="pill">0%</span>
+      </div>
+      <div class="bar" style="margin-bottom:12px"><span id="rate-bar" style="width:0%"></span></div>
+      <div id="tasks" class="list"></div>
+    </div>
+
+    <div style="margin-top:14px">
+      <button id="btn-proactive" class="proactive-btn" type="button">✋ Proatividade</button>
+      <p class="muted small center" style="margin-top:8px">Fez algo por conta própria? Registre aqui!</p>
+    </div>
+
+    <div class="card" style="margin-top:14px">
+      <h2>Minhas proatividades de hoje</h2>
+      <div id="proactive" class="list"></div>
+    </div>
+
+    <div class="card" style="margin-top:14px">
+      <h2>Últimos 7 dias</h2>
+      <div id="week" class="week"></div>
+    </div>
+
+    <p class="center muted small" style="margin-top:18px">🏠 XibataPaterna</p>
+  </div>
+
+  <div id="error" class="card hidden">
+    <h2>Carteirinha não encontrada</h2>
+    <p class="muted">Este link não é válido ou foi substituído. Peça um novo link ao seu responsável.</p>
+  </div>
+</main>
+
+<dialog id="dlg-proactive">
+  <form class="dialog-body" method="dialog" id="form-proactive">
+    <div class="dialog-head">
+      <h2 style="margin:0">✋ Registrar proatividade</h2>
+    </div>
+    <p class="muted small">Conte o que você fez hoje sem ninguém pedir. O responsável vai revisar e liberar seus pontos.</p>
+    <div class="field">
+      <label for="pro-title">O que você fez?</label>
+      <input id="pro-title" type="text" maxlength="80" placeholder="Ex.: organizei o armário" required>
+    </div>
+    <div class="field">
+      <label>Escolha rápida</label>
+      <div id="pro-suggestions" class="row"></div>
+    </div>
+    <div class="field">
+      <label for="pro-desc">Quer contar mais? (opcional)</label>
+      <textarea id="pro-desc" maxlength="300"></textarea>
+    </div>
+    <div class="row row-end">
+      <button type="button" class="btn-ghost" data-close>Cancelar</button>
+      <button type="submit">Registrar</button>
+    </div>
+  </form>
+</dialog>
+
+<div id="toasts"></div>
+<script src="/carteirinha.js" type="module"></script>
+</body>
+</html>
