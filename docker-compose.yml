@@ -1,0 +1,15 @@
+# Auto-hospedagem (VPS, mini-PC, Raspberry Pi).
+# Coloque um proxy com HTTPS na frente — veja DEPLOY.md.
+services:
+  app:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8080:8080"   # só local; quem expõe é o proxy TLS
+    environment:
+      TZ_APP: America/Sao_Paulo
+    volumes:
+      - xibata-data:/data
+
+volumes:
+  xibata-data:

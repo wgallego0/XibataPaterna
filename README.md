@@ -86,6 +86,15 @@ npm test            # 51 verificações ponta a ponta contra um servidor real
 O teste sobe o servidor num diretório temporário e cobre autenticação, isolamento
 entre filhos, materialização de rotinas, métricas, validações e path traversal.
 
+## Deploy
+
+O app precisa de um processo Node e de um disco persistente, então **não roda no
+GitHub Pages** nem em hospedagens só de arquivos estáticos. O repositório traz
+`Dockerfile`, `fly.toml`, `render.yaml` e `docker-compose.yml` prontos.
+
+Veja **[DEPLOY.md](DEPLOY.md)** para o passo a passo do Fly.io (recomendado),
+Render e auto-hospedagem com HTTPS.
+
 ## Configuração
 
 | Variável   | Padrão              | Descrição                                            |
