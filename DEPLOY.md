@@ -10,6 +10,29 @@ vários planos gratuitos têm disco efêmero e **apagam os dados a cada deploy**
 
 ---
 
+## Sem terminal? Rode pelo navegador (iPad, celular, Chromebook)
+
+O flyctl é um binário de linha de comando: existe para Linux, macOS e Windows,
+mas **não para iPadOS ou Android**. Se você não tem um computador à mão, use o
+**GitHub Codespaces**, que dá um terminal Linux completo dentro do navegador.
+
+Este repositório já vem preparado: o `.devcontainer/` instala o flyctl sozinho
+na criação do ambiente.
+
+1. Abra o repositório no navegador (Safari, Chrome, o que preferir).
+2. Botão **Code → Codespaces → Create codespace on main**.
+3. Espere a preparação. Ao final, o terminal imprime os quatro comandos do Fly.
+4. Rode-os ali mesmo. No `flyctl auth login`, toque no link que aparece para
+   autorizar em outra aba.
+
+Para experimentar o app antes de publicar, rode `npm start` no Codespaces: a
+porta 3000 é encaminhada automaticamente e aparece um aviso com o link.
+
+> Contas pessoais têm uma cota gratuita mensal de Codespaces. Pare o codespace
+> quando terminar (**Code → Codespaces → Stop**) para não consumir a cota à toa.
+
+---
+
 ## Opção 1 — Fly.io (recomendada)
 
 O Fly tem volume persistente e roda a imagem Docker deste repositório. O

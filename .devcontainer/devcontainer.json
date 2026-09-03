@@ -1,0 +1,16 @@
+{
+  "name": "XibataPaterna",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:22",
+  "postCreateCommand": "bash .devcontainer/setup.sh",
+  "remoteEnv": {
+    "FLYCTL_INSTALL": "/home/node/.fly",
+    "PATH": "/home/node/.fly/bin:${containerEnv:PATH}"
+  },
+  "forwardPorts": [3000],
+  "portsAttributes": {
+    "3000": {
+      "label": "XibataPaterna",
+      "onAutoForward": "notify"
+    }
+  }
+}
