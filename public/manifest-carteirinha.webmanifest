@@ -1,0 +1,18 @@
+{
+  "name": "Minha Carteirinha de Tarefas",
+  "short_name": "Carteirinha",
+  "description": "As tarefas de casa do dia, com botão de proatividade.",
+  "start_url": "./",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0f1424",
+  "theme_color": "#0f1424",
+  "lang": "pt-BR",
+  "icons": [
+    { "src": "/icons/carteirinha.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "/icons/carteirinha-maskable.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" },
+    { "src": "/icons/carteirinha-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/carteirinha-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+  ]
+}
