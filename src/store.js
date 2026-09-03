@@ -71,6 +71,11 @@ export function commit(mutator) {
   return result;
 }
 
+/** Aguarda a fila de escrita esvaziar — usado no desligamento gracioso. */
+export function flush() {
+  return writeQueue;
+}
+
 export function id(prefix = '') {
   return `${prefix}${crypto.randomBytes(9).toString('base64url')}`;
 }

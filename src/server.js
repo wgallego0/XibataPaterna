@@ -1,5 +1,5 @@
 import http from 'node:http';
-import { getDb, commit, id, token as newToken } from './store.js';
+import { getDb, commit, flush, id, token as newToken } from './store.js';
 import {
   createParent, createSession, destroySession, parentFromRequest,
   publicParent, readCookie, sessionCookie, verifyPassword,
@@ -7,7 +7,7 @@ import {
 import {
   CHILD_COLORS, buildMetrics, createChild, currentStreak, findChildByToken,
   isValidDate, materializeRoutines, publicChild, publicProactive, publicRoutine,
-  publicTask, shiftDate, tasksFor, today,
+  publicTask, shiftDate, tasksFor, today, TIMEZONE,
 } from './domain.js';
 import { HttpError, readBody, sendFile, sendJson, serveStatic } from './http.js';
 
@@ -60,6 +60,17 @@ function childOr404(childId) {
 
 const routes = [];
 const route = (method, pattern, handler) => routes.push({ method, pattern, handler });
+
+// --- saúde (usado pelos healthchecks das plataformas de deploy)
+route('GET', '/api/health', async (ctx) => {
+  const db = getDb();
+  return sendJson(ctx.res, 200, {
+    status: 'ok',
+    today: today(),
+    timezone: TIMEZONE,
+    configured: db.parents.length > 0,
+  });
+});
 
 // --- sessão / responsáveis
 route('GET', '/api/session', async (ctx) => {
@@ -477,5 +488,19 @@ const server = http.createServer(async (req, res) => {
 server.listen(PORT, HOST, () => {
   console.log(`XibataPaterna rodando em http://localhost:${PORT}`);
 });
+
+// Contêineres param o processo com SIGTERM: fecha o servidor e espera a fila de
+// escrita esvaziar para não perder a última alteração.
+for (const signal of ['SIGTERM', 'SIGINT']) {
+  process.on(signal, () => {
+    console.log(`\n${signal} recebido, encerrando…`);
+    server.close(async () => {
+      await flush();
+      process.exit(0);
+    });
+    // Se alguma conexão travar, não fica pendurado para sempre.
+    setTimeout(() => process.exit(0), 10000).unref();
+  });
+}
 
 export default server;

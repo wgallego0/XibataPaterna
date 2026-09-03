@@ -1,0 +1,21 @@
+# Render — exige plano pago para disco persistente (o plano gratuito apaga os
+# dados a cada deploy ou restart). Veja DEPLOY.md.
+services:
+  - type: web
+    name: xibatapaterna
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    region: oregon
+    plan: starter          # 'free' não suporta disco persistente
+    healthCheckPath: /api/health
+    envVars:
+      - key: PORT
+        value: 8080
+      - key: TZ_APP
+        value: America/Sao_Paulo
+      - key: DATA_DIR
+        value: /data
+    disk:
+      name: xibata-data
+      mountPath: /data
+      sizeGB: 1
